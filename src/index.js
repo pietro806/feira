@@ -1,5 +1,10 @@
 import wppconnect from '@wppconnect-team/wppconnect'
 import {example} from './api/chatgpt.js'
+import { ChatGPTAPI } from 'chatgpt'
+
+const api = new ChatGPTAPI({
+    apiKey: process.env.KEY
+})
 
 wppconnect.create({
     session: 'whatsbot', 
@@ -10,12 +15,9 @@ wppconnect.create({
 .then((client) => 
 
     client.onMessage((message) => {
-        let resposta = ''
         Chat()
         async function Chat() {
-            resposta = await example(message.body)
-            console.log(resposta);
-            client.sendText(message.from, resposta) 
+            client.sendText(message.from, await respostaGPT(api, message.body)) 
             
             .then((result) => {
                 console.log('Pong retornado: ', result)
