@@ -2,6 +2,8 @@ import wppconnect from '@wppconnect-team/wppconnect'
 import {respostaGPT} from './api/chatgpt.js'
 import { ChatGPTAPI } from 'chatgpt'
 
+import 'dotenv/config'
+
 const api = new ChatGPTAPI({
     apiKey: process.env.KEY
 })
