@@ -15,17 +15,16 @@ wppconnect.create({
 .then((client) => 
 
     client.onMessage((message) => {
-        
+
         if (!message.isGroupMsg)
             Chat()
 
         async function Chat() {
-            console.log(message);
             client.sendText(message.from, '*Carregando resposta...*');
             client.sendText(message.from, await respostaGPT(api, message.body))
             
             .then((result) => {
-                console.log('Pong retornado: ', "result")
+                console.log('Pong retornado: ', result)
             })
             
             .catch((erro) => {
