@@ -1,5 +1,5 @@
 import wppconnect from '@wppconnect-team/wppconnect'
-import {example} from './api/chatgpt.js'
+import {respostaGPT} from './api/chatgpt.js'
 import { ChatGPTAPI } from 'chatgpt'
 
 const api = new ChatGPTAPI({
@@ -15,12 +15,17 @@ wppconnect.create({
 .then((client) => 
 
     client.onMessage((message) => {
-        Chat()
+        
+        if (!message.isGroupMsg)
+            Chat()
+
         async function Chat() {
-            client.sendText(message.from, await respostaGPT(api, message.body)) 
+            console.log(message);
+            client.sendText(message.from, '*Carregando resposta...*');
+            client.sendText(message.from, await respostaGPT(api, message.body))
             
             .then((result) => {
-                console.log('Pong retornado: ', result)
+                console.log('Pong retornado: ', "result")
             })
             
             .catch((erro) => {
