@@ -1,11 +1,15 @@
 import wppconnect from '@wppconnect-team/wppconnect'
-import {respostaGPT} from './api/chatgpt.js'
+
 import { ChatGPTAPI } from 'chatgpt'
 
 import 'dotenv/config'
 
 const api = new ChatGPTAPI({
-    apiKey: process.env.KEY
+    apiKey: process.env.KEY,
+    completionParams: {
+        model: 'gpt-3.5-turbo',
+        temperature: 1,
+      }
 })
 
 wppconnect.create({
@@ -21,9 +25,28 @@ wppconnect.create({
         if (!message.isGroupMsg)
             Chat()
 
-        async function Chat() {
-            client.sendText(message.from, '*Carregando resposta...*');
-            client.sendText(message.from, await respostaGPT(api, message.body))
+            async function Chat() {
+                let respostaParcial = '';
+                
+                await api.sendMessage(message.body, {
+                    onProgress: (partialResponse) => {
+                        console.log(respostaParcial);
+
+                        if(partialResponse.delta != undefined)
+                        {
+                            respostaParcial = respostaParcial + partialResponse.delta;
+                        }
+
+                        if(partialResponse.text.charAt(partialResponse.text.length - 1) == '\n' || partialResponse.delta === undefined)
+                        {
+                            client.sendText(message.from, respostaParcial.trim());
+                            respostaParcial = '';
+                        }
+                    }
+                })
+
+            if(respostaParcial)
+                client.sendText(message.from, respostaParcial)
             
             .then((result) => {
                 console.log('Pong retornado: ', result)
